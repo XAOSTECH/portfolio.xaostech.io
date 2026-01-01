@@ -6,6 +6,7 @@ directory = "./dist"
 
 # For Cloudflare Pages deployment
 [env.production]
+name = "xaostech-portfolio"
 routes = [
   { pattern = "portfolio.xaostech.io/*", zone_name = "xaostech.io" },
   { pattern = "xaostech.io/portfolio/*", zone_name = "xaostech.io" }
