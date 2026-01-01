@@ -70,21 +70,28 @@
 
 ## 🔍 Overview
 
-portfolio worker
+Interactive portfolio showcase with **Three.js animations**:
+- Project gallery with details
+- 3D animations & visualizations
+- Media management (proxied to data.xaostech.io)
+- Responsive design via Astro
 
 ### Why portfolio.xaostech.io?
 
-{{WHY_PROJECT}}
+Dedicated **portfolio SSG** hosted on Cloudflare Pages. Features:
+- Static site generation (Astro)
+- Three.js for interactive elements
+- Media delegation to data worker
 
 ---
 
 ## ✨ Features
 
-- 🚀 **Feature 1** - Description of feature 1
-- 🔧 **Feature 2** - Description of feature 2
-- 📦 **Feature 3** - Description of feature 3
-- 🔒 **Feature 4** - Description of feature 4
-- ⚡ **Feature 5** - Description of feature 5
+- 🎨 **Three.js Animations** - Interactive 3D visualizations
+- 📸 **Media Gallery** - Images/videos via data worker
+- 📱 **Responsive Design** - Mobile-first approach
+- ⚡ **Static Generation** - Pre-built, ultra-fast
+- 🔍 **SEO Optimized** - Open Graph, meta tags
 
 ---
 
@@ -92,12 +99,27 @@ portfolio worker
 
 ### Prerequisites
 
-- {{PREREQUISITE_1}}
-- {{PREREQUISITE_2}}
-- {{PREREQUISITE_3}}
+- Node.js 18+
+- Cloudflare account (for Pages deployment)
 
 ### Quick Start
 
+```bash
+# Clone the repository
+git clone https://github.com/XAOSTECH/portfolio.xaostech.io.git
+cd portfolio.xaostech.io
+
+# Install dependencies
+npm install
+
+# Local development
+npm run dev
+
+# Build for production
+npm run build
+
+# Deploy to Cloudflare Pages
+npm run deploy
 ```bash
 # Clone the repository
 git clone https://github.com/XAOSTECH/portfolio.xaostech.io.git
