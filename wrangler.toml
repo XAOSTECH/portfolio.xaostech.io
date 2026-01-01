@@ -1,0 +1,18 @@
+name = "xaostech-portfolio"
+compatibility_date = "2025-12-31"
+send_metrics = false
+
+[env.production]
+routes = [
+  { pattern = "portfolio.xaostech.io/*", zone_name = "xaostech.io" },
+  { pattern = "xaostech.io/portfolio/*", zone_name = "xaostech.io" }
+]
+
+[env.production.assets]
+directory = "./dist"
+
+[env.testing]
+routes = [
+  { pattern = "portfolio.testing.local/*", zone_name = "localhost" },
+  { pattern = "testing.local/portfolio/*", zone_name = "localhost" }
+]
