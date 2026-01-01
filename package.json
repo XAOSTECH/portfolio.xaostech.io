@@ -6,7 +6,8 @@
     "postinstall": "astro telemetry disable",
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "deploy": "npm run build && wrangler pages deploy dist --env production"
   },
   "dependencies": {
     "astro": "latest",

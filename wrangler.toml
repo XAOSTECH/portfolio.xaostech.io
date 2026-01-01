@@ -1,0 +1,12 @@
+name = "portfolio-astro"
+compatibility_date = "2025-12-31"
+
+[assets]
+directory = "./dist"
+
+# For Cloudflare Pages deployment
+[env.production]
+routes = [
+  { pattern = "portfolio.xaostech.io/*", zone_name = "xaostech.io" },
+  { pattern = "xaostech.io/portfolio/*", zone_name = "xaostech.io" }
+]
