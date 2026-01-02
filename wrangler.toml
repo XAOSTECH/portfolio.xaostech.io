@@ -13,6 +13,7 @@ binding = "IMG"
 bucket_name = "img"
 
 [env.production]
+name = "xaostech-portfolio"
 
 [env.testing]
 routes = [
