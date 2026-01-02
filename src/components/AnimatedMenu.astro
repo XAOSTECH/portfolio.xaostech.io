@@ -1,0 +1,10 @@
+---
+import ParticleMenu from '../../../shared/styles/particle-effect/ParticleMenu.astro';
+import type { Props } from '../../../shared/styles/particle-effect/ParticleMenu.astro';
+
+const props = Astro.props as Props & { subtitle?: string };
+const { subtitle = 'Curated Works & Explorations', ...menuProps } = props;
+const mergedProps = { ...menuProps, subtitle };
+---
+
+<ParticleMenu {...mergedProps} />

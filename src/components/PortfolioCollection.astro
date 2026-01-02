@@ -1,0 +1,408 @@
+---
+// PortfolioCollection.astro - Showcase XAOSTECH projects with cards
+import type { AstroGlobal } from 'astro';
+
+export interface ProjectItem {
+  title: string;
+  description: string;
+  tags: string[];
+  href: string;
+  status?: 'beta' | 'stable' | 'experimental';
+}
+
+export interface Props {
+  projects: ProjectItem[];
+  title?: string;
+  subtitle?: string;
+}
+
+const { 
+  projects, 
+  title = 'Portfolio',
+  subtitle = 'Curated Works & Explorations'
+} = Astro.props;
+---
+
+<div class="portfolio-container">
+  <canvas id="particle-canvas"></canvas>
+  
+  <div class="portfolio-overlay">
+    <div class="portfolio-header">
+      <h1>{title}</h1>
+      <p class="subtitle">{subtitle}</p>
+    </div>
+
+    <div class="projects-grid">
+      {projects.map((project) => (
+        <a href={project.href} class="project-card" data-status={project.status}>
+          <div class="project-header">
+            <h3>{project.title}</h3>
+            {project.status && <span class="status-badge">{project.status}</span>}
+          </div>
+          <p class="project-description">{project.description}</p>
+          <div class="project-tags">
+            {project.tags.map((tag) => (
+              <span class="tag">{tag}</span>
+            ))}
+          </div>
+          <span class="project-arrow">→</span>
+        </a>
+      ))}
+    </div>
+
+    <footer class="portfolio-footer">
+      <p>&copy; 2026 XAOSTECH. All rights reserved.</p>
+      <a href="/">← Back to Home</a>
+    </footer>
+  </div>
+</div>
+
+<script>
+  class ParticleAnimation {
+    canvas: HTMLCanvasElement;
+    ctx: CanvasRenderingContext2D;
+    particles: any[] = [];
+    mouse = { x: 0, y: 0 };
+    animationId: number | null = null;
+
+    constructor(canvasId: string) {
+      this.canvas = document.getElementById(canvasId) as HTMLCanvasElement;
+      this.ctx = this.canvas.getContext('2d')!;
+      this.resize();
+      this.setupParticles();
+      this.setupEventListeners();
+      this.animate();
+    }
+
+    resize() {
+      this.canvas.width = window.innerWidth;
+      this.canvas.height = window.innerHeight;
+    }
+
+    setupParticles() {
+      const particleCount = 50;
+      for (let i = 0; i < particleCount; i++) {
+        this.particles.push({
+          x: Math.random() * this.canvas.width,
+          y: Math.random() * this.canvas.height,
+          vx: (Math.random() - 0.5) * 2,
+          vy: (Math.random() - 0.5) * 2,
+          radius: Math.random() * 2 + 1,
+          life: Math.random() * 100 + 50,
+          maxLife: 150,
+          hue: Math.random() * 360,
+        });
+      }
+    }
+
+    setupEventListeners() {
+      window.addEventListener('resize', () => this.resize());
+      document.addEventListener('mousemove', (e) => {
+        this.mouse.x = e.clientX;
+        this.mouse.y = e.clientY;
+      });
+    }
+
+    update() {
+      this.particles.forEach((p) => {
+        p.x += p.vx;
+        p.y += p.vy;
+
+        const dx = this.mouse.x - p.x;
+        const dy = this.mouse.y - p.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < 150) {
+          p.vx += (dx / dist) * 0.05;
+          p.vy += (dy / dist) * 0.05;
+        }
+
+        p.vx *= 0.98;
+        p.vy *= 0.98;
+
+        if (p.x < 0 || p.x > this.canvas.width) p.vx *= -1;
+        if (p.y < 0 || p.y > this.canvas.height) p.vy *= -1;
+
+        p.x = Math.max(0, Math.min(this.canvas.width, p.x));
+        p.y = Math.max(0, Math.min(this.canvas.height, p.y));
+
+        p.life--;
+        if (p.life < 0) {
+          p.x = Math.random() * this.canvas.width;
+          p.y = Math.random() * this.canvas.height;
+          p.life = p.maxLife;
+        }
+      });
+    }
+
+    draw() {
+      this.ctx.fillStyle = 'rgba(10, 10, 20, 0.1)';
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+      this.particles.forEach((p) => {
+        const opacity = (p.life / p.maxLife) * 0.8;
+        this.ctx.fillStyle = `hsla(${p.hue}, 100%, 60%, ${opacity})`;
+        this.ctx.beginPath();
+        this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        this.particles.forEach((p2) => {
+          const dx = p.x - p2.x;
+          const dy = p.y - p2.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+
+          if (dist < 100 && dist > 0) {
+            const lineOpacity = (1 - dist / 100) * opacity * 0.5;
+            this.ctx.strokeStyle = `hsla(${p.hue}, 100%, 60%, ${lineOpacity})`;
+            this.ctx.lineWidth = 1;
+            this.ctx.beginPath();
+            this.ctx.moveTo(p.x, p.y);
+            this.ctx.lineTo(p2.x, p2.y);
+            this.ctx.stroke();
+          }
+        });
+      });
+    }
+
+    animate = () => {
+      this.update();
+      this.draw();
+      this.animationId = requestAnimationFrame(this.animate);
+    };
+
+    destroy() {
+      if (this.animationId) cancelAnimationFrame(this.animationId);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => {
+      new ParticleAnimation('particle-canvas');
+    });
+  } else {
+    new ParticleAnimation('particle-canvas');
+  }
+</script>
+
+<style>
+  .portfolio-container {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0a0a14 0%, #1a0a2e 100%);
+  }
+
+  #particle-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .portfolio-overlay {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 100vh;
+    padding: 3rem 2rem;
+    text-align: center;
+    color: #fff;
+  }
+
+  .portfolio-header {
+    margin-bottom: 2rem;
+  }
+
+  .portfolio-header h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin: 0;
+    background: linear-gradient(90deg, #ff006e 0%, #ffbe0b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.15em;
+  }
+
+  .subtitle {
+    font-size: 1.1rem;
+    color: #aaa;
+    margin: 0.5rem 0 0 0;
+    font-weight: 300;
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    width: 100%;
+    max-width: 1200px;
+    margin: 2rem auto;
+    flex: 1;
+  }
+
+  .project-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    border: 2px solid rgba(255, 190, 11, 0.3);
+    border-radius: 8px;
+    background: rgba(255, 190, 11, 0.05);
+    color: #fff;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .project-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 190, 11, 0.1), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .project-card:hover {
+    border-color: #ffbe0b;
+    background: rgba(255, 190, 11, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(255, 190, 11, 0.2);
+  }
+
+  .project-card:hover::before {
+    left: 100%;
+  }
+
+  .project-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 0.75rem;
+    gap: 1rem;
+  }
+
+  .project-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+    font-weight: 600;
+    text-align: left;
+  }
+
+  .status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: rgba(0, 255, 136, 0.2);
+    border: 1px solid rgba(0, 255, 136, 0.5);
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+  }
+
+  .status-badge {
+    color: #00ff88;
+  }
+
+  .project-card[data-status='beta'] .status-badge {
+    background: rgba(255, 190, 11, 0.2);
+    border-color: rgba(255, 190, 11, 0.5);
+    color: #ffbe0b;
+  }
+
+  .project-card[data-status='experimental'] .status-badge {
+    background: rgba(255, 106, 146, 0.2);
+    border-color: rgba(255, 106, 146, 0.5);
+    color: #ff6a92;
+  }
+
+  .project-description {
+    margin: 0 0 1rem 0;
+    font-size: 0.95rem;
+    color: #ccc;
+    line-height: 1.5;
+    text-align: left;
+    flex-grow: 1;
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background: rgba(0, 200, 255, 0.1);
+    border: 1px solid rgba(0, 200, 255, 0.3);
+    border-radius: 3px;
+    font-size: 0.75rem;
+    color: #00c8ff;
+  }
+
+  .project-arrow {
+    align-self: flex-end;
+    font-size: 1.5rem;
+    transition: transform 0.3s ease;
+  }
+
+  .project-card:hover .project-arrow {
+    transform: translateX(4px);
+  }
+
+  .portfolio-footer {
+    width: 100%;
+    padding: 2rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem;
+    color: #666;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .portfolio-footer p {
+    margin: 0;
+  }
+
+  .portfolio-footer a {
+    color: #ffbe0b;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .portfolio-footer a:hover {
+    color: #fff;
+  }
+
+  @media (max-width: 768px) {
+    .portfolio-header h1 {
+      font-size: 2rem;
+    }
+
+    .projects-grid {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    .portfolio-footer {
+      flex-direction: column;
+      gap: 1rem;
+      text-align: center;
+    }
+  }
+</style>

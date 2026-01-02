@@ -1,15 +1,18 @@
 name = "xaostech-portfolio"
 compatibility_date = "2025-12-31"
+main = "src/worker.ts"
 send_metrics = false
 
-[env.production]
 routes = [
   { pattern = "portfolio.xaostech.io/*", zone_name = "xaostech.io" },
   { pattern = "xaostech.io/portfolio/*", zone_name = "xaostech.io" }
 ]
 
-[env.production.assets]
-directory = "./dist"
+[[env.production.r2_buckets]]
+binding = "IMG"
+bucket_name = "img"
+
+[env.production]
 
 [env.testing]
 routes = [

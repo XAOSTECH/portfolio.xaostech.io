@@ -1,16 +1,60 @@
 ---
+import PortfolioCollection from '../components/PortfolioCollection.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
+
+const projects = [
+  {
+    title: 'Blog Platform',
+    description: 'Distributed content management with real-time caching, D1 database backend, and R2 media storage. Enterprise-grade performance.',
+    tags: ['Hono', 'D1', 'KV', 'R2', 'TypeScript'],
+    href: 'https://blog.xaostech.io',
+    status: 'stable' as const,
+  },
+  {
+    title: 'Chat API',
+    description: 'Real-time messaging infrastructure with WebSocket support, message persistence in KV, and scalable architecture for millions of concurrent users.',
+    tags: ['WebSocket', 'KV', 'Real-time', 'Scalable'],
+    href: 'https://chat.xaostech.io',
+    status: 'beta' as const,
+  },
+  {
+    title: 'Data Privacy Suite',
+    description: 'GDPR-compliant data handling with consent management, encrypted storage, and audit trails. Zero-knowledge architecture.',
+    tags: ['GDPR', 'Privacy', 'Encryption', 'Compliance'],
+    href: 'https://data.xaostech.io',
+    status: 'stable' as const,
+  },
+  {
+    title: 'Account Management',
+    description: 'OAuth 2.0 authentication, session management, and multi-tenant user infrastructure. Supports GitHub, OpenID, and custom providers.',
+    tags: ['OAuth', 'Auth', 'Session', 'Multi-tenant'],
+    href: 'https://account.xaostech.io',
+    status: 'stable' as const,
+  },
+  {
+    title: 'Lingua Translation Engine',
+    description: 'AI-powered language processing with OpenAI integration, translation caching, and support for 100+ languages.',
+    tags: ['AI', 'Translation', 'OpenAI', 'NLP'],
+    href: 'https://lingua.xaostech.io',
+    status: 'beta' as const,
+  },
+  {
+    title: 'Payment Processing',
+    description: 'Stripe integration, subscription management, usage-based billing, and webhook handling for payment events.',
+    tags: ['Stripe', 'Billing', 'Payments', 'Webhooks'],
+    href: 'https://payments.xaostech.io',
+    status: 'beta' as const,
+  },
+  {
+    title: 'RESTful API',
+    description: 'High-performance API gateway with rate limiting, request validation, and comprehensive logging for system integration.',
+    tags: ['REST', 'API', 'Rate-limiting', 'Logging'],
+    href: 'https://api.xaostech.io',
+    status: 'stable' as const,
+  },
+];
 ---
 
-<BaseLayout title="Portfolio - XAOSTECH">
-  <main style="min-height: 100vh; display: flex; align-items: center; justify-content: center;">
-    <section style="text-align: center;">
-      <h1>Portfolio Showcase</h1>
-      <p>Curated projects with Three.js animations</p>
-      <div style="margin-top: 3rem;">
-        <!-- Projects grid will be populated here -->
-        <p style="color: #666;">Projects loading...</p>
-      </div>
-    </section>
-  </main>
+<BaseLayout title="Portfolio - XAOSTECH" description="Production-ready microservices and platforms">
+  <PortfolioCollection projects={projects} title="Portfolio" subtitle="Production-Ready Microservices & Solutions" />
 </BaseLayout>
