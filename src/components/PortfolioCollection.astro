@@ -1,7 +1,4 @@
 ---
-// PortfolioCollection.astro - Showcase XAOSTECH projects with cards
-import type { AstroGlobal } from 'astro';
-
 export interface ProjectItem {
   title: string;
   description: string;
@@ -10,49 +7,66 @@ export interface ProjectItem {
   status?: 'beta' | 'stable' | 'experimental';
 }
 
-export interface Props {
+export interface Section {
+  id: string;
+  title: string;
+  subtitle: string;
+  color: string;
+  source: string;
   projects: ProjectItem[];
-  title?: string;
-  subtitle?: string;
 }
 
-const { 
-  projects, 
-  title = 'Portfolio',
-  subtitle = 'Curated Works & Explorations'
-} = Astro.props;
+export interface Props {
+  sections: Section[];
+}
+
+const { sections } = Astro.props;
 ---
 
 <div class="portfolio-container">
   <canvas id="particle-canvas"></canvas>
-  
-  <div class="portfolio-overlay">
-    <div class="portfolio-header">
-      <h1>{title}</h1>
-      <p class="subtitle">{subtitle}</p>
-    </div>
 
-    <div class="projects-grid">
-      {projects.map((project) => (
-        <a href={project.href} class="project-card" data-status={project.status}>
-          <div class="project-header">
-            <h3>{project.title}</h3>
-            {project.status && <span class="status-badge">{project.status}</span>}
-          </div>
-          <p class="project-description">{project.description}</p>
-          <div class="project-tags">
-            {project.tags.map((tag) => (
-              <span class="tag">{tag}</span>
-            ))}
-          </div>
-          <span class="project-arrow">→</span>
-        </a>
-      ))}
-    </div>
+  <div class="portfolio-overlay">
+    <header class="portfolio-header">
+      <h1>XAOSTECH</h1>
+      <p class="subtitle">Art · Code · Infrastructure</p>
+      <nav class="section-nav">
+        {sections.map((s) => (
+          <a href={`#${s.id}`} style={`--accent: ${s.color}`}>{s.title}</a>
+        ))}
+      </nav>
+    </header>
+
+    {sections.map((section) => (
+      <section id={section.id} class="portfolio-section" style={`--accent: ${section.color}`}>
+        <div class="section-header">
+          <h2>{section.title}</h2>
+          <p class="section-subtitle">{section.subtitle}</p>
+          <span class="section-source">{section.source}</span>
+        </div>
+        <div class="projects-grid">
+          {section.projects.map((project) => (
+            <a href={project.href} class="project-card" data-status={project.status}>
+              <div class="project-header">
+                <h3>{project.title}</h3>
+                {project.status && <span class="status-badge">{project.status}</span>}
+              </div>
+              <p class="project-description">{project.description}</p>
+              <div class="project-tags">
+                {project.tags.map((tag) => (
+                  <span class="tag">{tag}</span>
+                ))}
+              </div>
+              <span class="project-arrow">→</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    ))}
 
     <footer class="portfolio-footer">
       <p>&copy; 2026 XAOSTECH. All rights reserved.</p>
-      <a href="/">← Back to Home</a>
+      <a href="https://xaostech.io">← Back to Home</a>
     </footer>
   </div>
 </div>
@@ -75,18 +89,19 @@ const {
     }
 
     resize() {
-      this.canvas.width = window.innerWidth;
-      this.canvas.height = window.innerHeight;
+      const container = this.canvas.parentElement!;
+      this.canvas.width = container.scrollWidth;
+      this.canvas.height = container.scrollHeight;
     }
 
     setupParticles() {
-      const particleCount = 50;
+      const particleCount = 60;
       for (let i = 0; i < particleCount; i++) {
         this.particles.push({
           x: Math.random() * this.canvas.width,
           y: Math.random() * this.canvas.height,
-          vx: (Math.random() - 0.5) * 2,
-          vy: (Math.random() - 0.5) * 2,
+          vx: (Math.random() - 0.5) * 1.5,
+          vy: (Math.random() - 0.5) * 1.5,
           radius: Math.random() * 2 + 1,
           life: Math.random() * 100 + 50,
           maxLife: 150,
@@ -96,10 +111,11 @@ const {
     }
 
     setupEventListeners() {
-      window.addEventListener('resize', () => this.resize());
+      const ro = new ResizeObserver(() => this.resize());
+      ro.observe(this.canvas.parentElement!);
       document.addEventListener('mousemove', (e) => {
         this.mouse.x = e.clientX;
-        this.mouse.y = e.clientY;
+        this.mouse.y = e.clientY + window.scrollY;
       });
     }
 
@@ -136,7 +152,7 @@ const {
     }
 
     draw() {
-      this.ctx.fillStyle = 'rgba(10, 10, 20, 0.1)';
+      this.ctx.fillStyle = 'rgba(10, 10, 20, 0.15)';
       this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
       this.particles.forEach((p) => {
@@ -169,16 +185,10 @@ const {
       this.draw();
       this.animationId = requestAnimationFrame(this.animate);
     };
-
-    destroy() {
-      if (this.animationId) cancelAnimationFrame(this.animationId);
-    }
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      new ParticleAnimation('particle-canvas');
-    });
+    document.addEventListener('DOMContentLoaded', () => new ParticleAnimation('particle-canvas'));
   } else {
     new ParticleAnimation('particle-canvas');
   }
@@ -189,7 +199,6 @@ const {
     position: relative;
     width: 100%;
     min-height: 100vh;
-    overflow: hidden;
     background: linear-gradient(135deg, #0a0a14 0%, #1a0a2e 100%);
   }
 
@@ -200,51 +209,102 @@ const {
     width: 100%;
     height: 100%;
     display: block;
+    pointer-events: none;
   }
 
   .portfolio-overlay {
     position: relative;
     z-index: 10;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    min-height: 100vh;
     padding: 3rem 2rem;
-    text-align: center;
-    color: #fff;
+    max-width: 1200px;
+    margin: 0 auto;
   }
 
   .portfolio-header {
-    margin-bottom: 2rem;
+    text-align: center;
+    margin-bottom: 3rem;
+    padding-top: 2rem;
   }
 
   .portfolio-header h1 {
-    font-size: 3.5rem;
+    font-size: 4rem;
     font-weight: 700;
     margin: 0;
-    background: linear-gradient(90deg, #ff006e 0%, #ffbe0b 100%);
+    background: linear-gradient(90deg, #ff006e 0%, #ffbe0b 50%, #00c8ff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.2em;
   }
 
   .subtitle {
-    font-size: 1.1rem;
-    color: #aaa;
-    margin: 0.5rem 0 0 0;
+    font-size: 1.2rem;
+    color: #888;
+    margin: 0.75rem 0 0 0;
     font-weight: 300;
+    letter-spacing: 0.3em;
+    text-transform: lowercase;
+  }
+
+  .section-nav {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .section-nav a {
+    color: var(--accent, #aaa);
+    text-decoration: none;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.4rem 1rem;
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+
+  .section-nav a:hover {
+    background: color-mix(in srgb, var(--accent) 15%, transparent);
+    border-color: var(--accent);
+  }
+
+  .portfolio-section {
+    margin-bottom: 4rem;
+    scroll-margin-top: 2rem;
+  }
+
+  .section-header {
+    margin-bottom: 2rem;
+    padding-left: 1rem;
+    border-left: 3px solid var(--accent, #ffbe0b);
+  }
+
+  .section-header h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0;
+    color: #fff;
+  }
+
+  .section-subtitle {
+    font-size: 0.95rem;
+    color: #999;
+    margin: 0.3rem 0 0 0;
+  }
+
+  .section-source {
+    font-size: 0.75rem;
+    color: #555;
+    font-family: monospace;
   }
 
   .projects-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 1.5rem;
-    width: 100%;
-    max-width: 1200px;
-    margin: 2rem auto;
-    flex: 1;
   }
 
   .project-card {
@@ -252,14 +312,15 @@ const {
     display: flex;
     flex-direction: column;
     padding: 1.5rem;
-    border: 2px solid rgba(255, 190, 11, 0.3);
+    border: 1px solid color-mix(in srgb, var(--accent, #ffbe0b) 25%, transparent);
     border-radius: 8px;
-    background: rgba(255, 190, 11, 0.05);
+    background: rgba(255, 255, 255, 0.03);
     color: #fff;
     text-decoration: none;
     transition: all 0.3s ease;
     cursor: pointer;
     overflow: hidden;
+    backdrop-filter: blur(4px);
   }
 
   .project-card::before {
@@ -269,15 +330,15 @@ const {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 190, 11, 0.1), transparent);
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent, #ffbe0b) 8%, transparent), transparent);
     transition: left 0.5s ease;
   }
 
   .project-card:hover {
-    border-color: #ffbe0b;
-    background: rgba(255, 190, 11, 0.15);
+    border-color: var(--accent, #ffbe0b);
+    background: color-mix(in srgb, var(--accent, #ffbe0b) 8%, transparent);
     transform: translateY(-4px);
-    box-shadow: 0 8px 32px rgba(255, 190, 11, 0.2);
+    box-shadow: 0 8px 32px color-mix(in srgb, var(--accent, #ffbe0b) 15%, transparent);
   }
 
   .project-card:hover::before {
@@ -294,44 +355,41 @@ const {
 
   .project-header h3 {
     margin: 0;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     font-weight: 600;
     text-align: left;
   }
 
   .status-badge {
     display: inline-block;
-    padding: 0.25rem 0.75rem;
-    background: rgba(0, 255, 136, 0.2);
-    border: 1px solid rgba(0, 255, 136, 0.5);
+    padding: 0.2rem 0.6rem;
     border-radius: 4px;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     white-space: nowrap;
-  }
-
-  .status-badge {
+    background: rgba(0, 255, 136, 0.15);
+    border: 1px solid rgba(0, 255, 136, 0.4);
     color: #00ff88;
   }
 
   .project-card[data-status='beta'] .status-badge {
-    background: rgba(255, 190, 11, 0.2);
-    border-color: rgba(255, 190, 11, 0.5);
+    background: rgba(255, 190, 11, 0.15);
+    border-color: rgba(255, 190, 11, 0.4);
     color: #ffbe0b;
   }
 
   .project-card[data-status='experimental'] .status-badge {
-    background: rgba(255, 106, 146, 0.2);
-    border-color: rgba(255, 106, 146, 0.5);
+    background: rgba(255, 106, 146, 0.15);
+    border-color: rgba(255, 106, 146, 0.4);
     color: #ff6a92;
   }
 
   .project-description {
     margin: 0 0 1rem 0;
-    font-size: 0.95rem;
-    color: #ccc;
+    font-size: 0.9rem;
+    color: #bbb;
     line-height: 1.5;
     text-align: left;
     flex-grow: 1;
@@ -340,69 +398,56 @@ const {
   .project-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
+    gap: 0.4rem;
+    margin-bottom: 0.75rem;
   }
 
   .tag {
     display: inline-block;
-    padding: 0.25rem 0.5rem;
-    background: rgba(0, 200, 255, 0.1);
-    border: 1px solid rgba(0, 200, 255, 0.3);
+    padding: 0.2rem 0.45rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 3px;
-    font-size: 0.75rem;
-    color: #00c8ff;
+    font-size: 0.7rem;
+    color: #aaa;
   }
 
   .project-arrow {
     align-self: flex-end;
-    font-size: 1.5rem;
-    transition: transform 0.3s ease;
+    font-size: 1.3rem;
+    color: #555;
+    transition: all 0.3s ease;
   }
 
   .project-card:hover .project-arrow {
     transform: translateX(4px);
+    color: var(--accent, #ffbe0b);
   }
 
   .portfolio-footer {
-    width: 100%;
     padding: 2rem 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    font-size: 0.9rem;
-    color: #666;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 0.85rem;
+    color: #555;
     display: flex;
     justify-content: space-between;
     align-items: center;
   }
 
-  .portfolio-footer p {
-    margin: 0;
-  }
+  .portfolio-footer p { margin: 0; }
 
   .portfolio-footer a {
-    color: #ffbe0b;
+    color: #888;
     text-decoration: none;
     transition: color 0.3s ease;
   }
 
-  .portfolio-footer a:hover {
-    color: #fff;
-  }
+  .portfolio-footer a:hover { color: #fff; }
 
   @media (max-width: 768px) {
-    .portfolio-header h1 {
-      font-size: 2rem;
-    }
-
-    .projects-grid {
-      grid-template-columns: 1fr;
-      gap: 1rem;
-    }
-
-    .portfolio-footer {
-      flex-direction: column;
-      gap: 1rem;
-      text-align: center;
-    }
+    .portfolio-header h1 { font-size: 2.5rem; }
+    .section-header h2 { font-size: 1.5rem; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .portfolio-footer { flex-direction: column; gap: 1rem; text-align: center; }
   }
 </style>
