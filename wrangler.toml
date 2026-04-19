@@ -5,4 +5,10 @@ compatibility_flags = ["nodejs_compat", "disable_nodejs_process_v2"]
 
 [env.production]
 name = "xaostech-portfolio"
+main = "./dist/server/entry.mjs"
+routes = [{ pattern = "portfolio.xaostech.io/*", zone_name = "xaostech.io" }]
+
+[env.production.assets]
+directory = "./dist/client"
+binding = "ASSETS"
 main = "./dist/_worker.js/index.js"
