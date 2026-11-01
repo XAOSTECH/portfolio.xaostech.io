@@ -63,8 +63,8 @@
 - [Contributing](#-contributing)
 - [Roadmap](#-roadmap)
 - [Support](#-support)
-- [License](#-license)
-- [Acknowledgments](#-acknowledgments)
+- [Licence](#-licence)
+- [Acknowledgements](#-acknowledgements)
 
 ---
 
@@ -91,7 +91,7 @@ Dedicated **portfolio SSG** hosted on Cloudflare Pages. Features:
 - 📸 **Media Gallery** - Images/videos via data worker
 - 📱 **Responsive Design** - Mobile-first approach
 - ⚡ **Static Generation** - Pre-built, ultra-fast
-- 🔍 **SEO Optimized** - Open Graph, meta tags
+- 🔍 **SEO Optimised** - Open Graph, meta tags
 
 ---
 
@@ -250,13 +250,13 @@ See the [open issues](https://github.com/XAOSTECH/portfolio.xaostech.io/issues) 
 
 ---
 
-## 📄 License
+## 📄 Licence
 
 Distributed under the GPL-3.0 License. See [`LICENSE`](LICENSE) for more information.
 
 ---
 
-## 🙏 Acknowledgments
+## 🙏 Acknowledgements
 
 - {{ACKNOWLEDGMENT_1}}
 - {{ACKNOWLEDGMENT_2}}
