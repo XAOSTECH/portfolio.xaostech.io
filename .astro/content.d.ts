@@ -145,8 +145,7 @@ declare module 'astro:content' {
 			? ReferenceContentEntry<C, ValidContentEntrySlug<C>>
 			: ReferenceDataEntry<C, keyof DataEntryMap[C]>
 	>;
-	// Allow generic `string` to avoid excessive type errors in the config
-	// if `dev` is not running to update as you edit.
+	// Allow generic `string` to avoid excessive type errors in the config if `dev` is not running to update as you edit.
 	// Invalid collection names will be caught at build time.
 	export function reference<C extends string>(
 		collection: C,
